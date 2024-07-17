@@ -1,10 +1,17 @@
+import { Box, Typography, capitalize } from '@mui/material'
 import React from 'react'
 
 const Navbar = () => {
   return (
-    <div className="navbar-container">
-        this is navbar
-    </div>
+    <Box sx={{width: "100%", background: "white", height: "3rem"}}>
+       <Typography 
+        fontSize={"22px"}
+        fontWeight={"700px"}
+        textTransform={"capitalize"}
+        >
+            contact
+        </Typography>     
+    </Box>
   )
 }
 
