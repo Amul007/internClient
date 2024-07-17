@@ -9,7 +9,7 @@ const Navbar = () => {
         fontWeight={"700px"}
         textTransform={"capitalize"}
         >
-            contact
+            
         </Typography>     
     </Box>
   )

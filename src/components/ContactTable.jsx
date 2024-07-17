@@ -5,12 +5,11 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Stack, Button } from "@mui/material";
+import { Stack, Button, Dialog } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import EditContact from "./Contact/EditContact";
-import { Dialog } from "@mui/material";
 import DeleteContact from "./Contact/DeleteContact";
 
 const CustomButton = ({ children, icon, color, onClick }) => (
@@ -34,37 +33,43 @@ const ContactTable = () => {
   const [openForm, setOpenForm] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [deletedContact, setDeletedContact] = useState(null);
-
   const [contacts, setContacts] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   const handleClose = () => {
     setOpenForm(null);
     setSelectedContact(null);
   };
 
-  useEffect(() => {
-    const fetchContacts = async () => {
-      try {
-        const res = await axios.get("http://localhost:7000/api/v1/contact");
-        setContacts(res.data.contacts);
-        console.log("this is get response", res.data.contacts);
-      } catch (err) {
-        console.log("this is error", err.response?.data);
-      }
-    };
+  const fetchContacts = async () => {
+    try {
+      const res = await axios.get("http://localhost:7000/api/v1/contact");
+      setContacts(res.data.contacts);
+      console.log("this is get response", res.data.contacts);
+    } catch (err) {
+      console.log("this is error", err.response?.data);
+    }
+  };
 
+  useEffect(() => {
     fetchContacts();
-  }, []);
+  }, [refresh]);
 
   const handleEdit = (contact) => {
     setSelectedContact(contact);
     setOpenForm("edit");
   };
-  
+
   const handleDelete = (deleteId) => {
-    setDeletedContact(deleteId)
+    setDeletedContact(deleteId);
     setOpenForm("delete");
   };
+
+  const handleFormClose = () => {
+    setOpenForm(null);
+    setRefresh((prev) => !prev);
+  };
+
   return (
     <>
       <TableContainer sx={{ background: "white", borderRadius: "8px" }}>
@@ -101,7 +106,9 @@ const ContactTable = () => {
                 <TableCell sx={{ color: "#7B8594" }}>{row.lastname}</TableCell>
                 <TableCell sx={{ color: "#7B8594" }}>{row.phoneNumber}</TableCell>
                 <TableCell sx={{ color: "#7B8594" }}>{row.email}</TableCell>
-                <TableCell sx={{ color: "#7B8594" }}>{row.createdAt.slice(0, row.createdAt.indexOf("T"))}</TableCell>
+                <TableCell sx={{ color: "#7B8594" }}>
+                  {row.createdAt.slice(0, row.createdAt.indexOf("T"))}
+                </TableCell>
                 <TableCell
                   sx={{
                     color: row.subscription === "Subscribed" ? "green" : "red",
@@ -119,8 +126,8 @@ const ContactTable = () => {
                     >
                       Edit
                     </CustomButton>
-                    <CustomButton 
-                      icon={<DeleteIcon />} 
+                    <CustomButton
+                      icon={<DeleteIcon />}
                       color="error"
                       onClick={() => handleDelete(row._id)}
                     >
@@ -135,15 +142,15 @@ const ContactTable = () => {
       </TableContainer>
       <Dialog
         open={openForm !== null}
-        onClose={handleClose}
+        onClose={handleFormClose}
         disableEscapeKeyDown
         disableBackdropClick
       >
         {openForm === "edit" && (
-          <EditContact onClose={handleClose} data={selectedContact} />
+          <EditContact onClose={handleFormClose} data={selectedContact} />
         )}
         {openForm === "delete" && (
-          <DeleteContact onClose={handleClose} data={deletedContact}/>
+          <DeleteContact onClose={handleFormClose} id={deletedContact} />
         )}
       </Dialog>
     </>

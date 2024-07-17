@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box } from '@mui/material';
 import axios from "axios"
-const DeleteContact = ({onClose, deletedContact}) => {
+const DeleteContact = ({onClose, id}) => {
     console.log("This is delete id to be deletet")
     const [open, setOpen] = React.useState(true);
     const handleClose = () => {
@@ -17,7 +17,7 @@ const DeleteContact = ({onClose, deletedContact}) => {
     const handleDelete = async() => {
         try {
             console.log("get api is also fired");
-            const response = await axios.put(`http://localhost:7000/api/v1/contact/${id}`, data);
+            const response = await axios.delete(`http://localhost:7000/api/v1/contact/${id}`);
             console.log(response.data);
             onClose();
           } catch (error) {
@@ -38,7 +38,7 @@ const DeleteContact = ({onClose, deletedContact}) => {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose} variant="outlined">Cancel</Button>
-              <Button onClick={handleClose} autoFocus variant="contained" color='error' startIcon={<DeleteIcon/>}>
+              <Button onClick={() => handleDelete()} autoFocus variant="contained" color='error' startIcon={<DeleteIcon/>}>
                 Delete
               </Button>
             </DialogActions>
